@@ -2,67 +2,43 @@
 using System.Collections.Generic;
 
 
-namespace EachElementOnlyOnce
+namespace SinglyLinkedList
 {
   public class Node<T>
   {
-    public Node<T> Next { get; set; }
+    public Node<T> Next { get; internal set; }
 
-    public T Value { get; }
+    public T Value { get; set; }
 
     public Node(T value)
     {
       Value = value;
+      Next = null;
     }
   }
 
   public class SinglyLinkedList<T>
   {
-    private readonly int bufferSize;
-    private readonly T[] circularBuffer;
-    private readonly int currentBufferIndex;
+    public Node<T> Start { get; private set; }
+    public Node<T> End { get; private set; }
 
-    public Node<T> Start { get; }
-    public int Count { get; }
-
-    public SinglyLinkedList(IEnumerable<T> collection, int bufferSize = 5)
+    public SinglyLinkedList()
     {
-      this.bufferSize = bufferSize;
-      circularBuffer = new T[bufferSize];
-      IEnumerator<T> enumerator = collection.GetEnumerator();
-      if (enumerator.MoveNext())
-      {
-        Count = 1;
-
-        Start = new Node<T>(enumerator.Current);
-        circularBuffer[1] = Start.Value;
-        Node<T> lastLinked = Start;
-        while (enumerator.MoveNext())
-        {
-          Node<T> currentNode = new Node<T>(enumerator.Current);
-          currentBufferIndex = Count++ % bufferSize;
-          circularBuffer[currentBufferIndex] = currentNode.Value;
-
-          lastLinked.Next = currentNode;
-          lastLinked = currentNode;
-        }
-      }
+      Start = End = null;
     }
 
-    
-
-    public T GetItemFromEnd(int position = 5)
+    public void Add(T value)
     {
-      if (position > Count || position > bufferSize || position <= 0)
+      Node<T> newNode = new Node<T>(value);
+      if (End is null)
       {
-        int sizeThreshold = Count > bufferSize ? bufferSize : Count;
-        throw new ArgumentOutOfRangeException(String.Format("Position requested must be between 1 and {0}", sizeThreshold));
+        Start = End = newNode;
       }
-      if ((currentBufferIndex + 1 - position) >= 0)
+      else
       {
-        return circularBuffer[currentBufferIndex + 1 - position];
+        End.Next = newNode;
+        End = newNode;
       }
-      return circularBuffer[bufferSize + (currentBufferIndex - position) + 1];
     }
   }
 }

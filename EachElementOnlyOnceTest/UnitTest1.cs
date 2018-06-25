@@ -1,66 +1,94 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using EachElementOnlyOnce;
+using SinglyLinkedList;
+using ProcessList;
 
 namespace EachElementOnlyOnceTest
 {
   [TestClass]
-  public class EachElementOnlyOnceNumberTest
+  public class SinglyLinkedListTests
   {
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentOutOfRangeException))]
     public void TestWithEmpty()
     {
-      int[] input = new int[] { };
-      SinglyLinkedList<int> testList = new SinglyLinkedList<int>(input);
-      int elementAt5 = testList.GetItemFromEnd();
+      SinglyLinkedList<int> testList = new SinglyLinkedList<int>();
+      Assert.IsTrue(ReferenceEquals(testList.Start, testList.End));
     }
 
     [TestMethod]
-    public void TestWithOrderedNumbers()
+    public void TestAdd1stITem()
     {
-      int[] input = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-      SinglyLinkedList<int> testList = new SinglyLinkedList<int>(input);
-      int elementAt5 = testList.GetItemFromEnd();
-      Assert.AreEqual(input[input.Length - 5], elementAt5);
+      SinglyLinkedList<int> testList = new SinglyLinkedList<int>();
+
+      testList.Add(1);
+
+      Assert.AreEqual(1, testList.Start.Value);
+      Assert.IsTrue(ReferenceEquals(testList.Start, testList.End));
     }
 
     [TestMethod]
-    public void TestWithFullBuffer_OrderedNumbersGetAt3()
+    public void TestAddMultipleItems()
     {
-      int[] input = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-      SinglyLinkedList<int> testList = new SinglyLinkedList<int>(input,6);
-      int elementAt3 = testList.GetItemFromEnd(3);
-      Assert.AreEqual(input[input.Length - 3], elementAt3);
+      SinglyLinkedList<int> testList = new SinglyLinkedList<int>();
+
+      testList.Add(1);
+      testList.Add(2);
+      testList.Add(3);
+      testList.Add(4);
+      testList.Add(5);
+      testList.Add(6);
+      Assert.AreEqual(1, testList.Start.Value);
+      Assert.AreEqual(2, testList.Start.Next.Value);
+      Assert.AreEqual(6, testList.End.Value);
+      Assert.IsFalse(ReferenceEquals(testList.Start, testList.End));
+    }
+
+  }
+
+  [TestClass]
+  public class ProcessListTests
+  {
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void TestProcessEmptyList()
+    {
+      SinglyLinkedList<int> emptyList = new SinglyLinkedList<int>();
+      int value = ProcessList<int>.GetElementFromEndAt(emptyList);
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void TestProcessShortList()
+    {
+      SinglyLinkedList<int> shortList = new SinglyLinkedList<int>();
+      shortList.Add(1);
+      shortList.Add(2);
+      int value = ProcessList<int>.GetElementFromEndAt(shortList);
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentOutOfRangeException))]
-    public void TestWithInvalidGetPosition()
+    public void TestProcessLargeList()
     {
-      int[] input = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-      SinglyLinkedList<int> testList = new SinglyLinkedList<int>(input);
-      int elementAt3 = testList.GetItemFromEnd(0);
-    }
-
-
-    [TestMethod]
-    public void TestWithFullBuffer_OrderedNumbersGetAt1()
-    {
-      int[] input = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-      SinglyLinkedList<int> testList = new SinglyLinkedList<int>(input);
-      int elementAt3 = testList.GetItemFromEnd(1);
-      Assert.AreEqual(input[input.Length - 1], elementAt3);
+      SinglyLinkedList<int> largerList = new SinglyLinkedList<int>();
+      for (int i=0; i < 33; i++)
+      {
+        largerList.Add(i);
+      }
+      int value = ProcessList<int>.GetElementFromEndAt(largerList);
+      Assert.AreEqual(33 - 5, value);
     }
 
     [TestMethod]
-    public void TestWithUnorderedNumbers()
+    public void TestProcessGetLastNumber()
     {
-      int[] input = new int[] { 1, 7, 9, 0, 15, 2, 4, 5, 2, 1, 1, 9, 13, 23, 17, 19, 25 };
-      SinglyLinkedList<int> testList = new SinglyLinkedList<int>(input);
-      int elementAt5 = testList.GetItemFromEnd();
-      Assert.AreEqual(input[input.Length - 5], elementAt5);
+      SinglyLinkedList<int> largerList = new SinglyLinkedList<int>();
+      for (int i = 0; i <= 12; i++)
+      {
+        largerList.Add(i);
+      }
+      int value = ProcessList<int>.GetElementFromEndAt(largerList,1);
+      Assert.AreEqual(12, value);
     }
   }
 }
