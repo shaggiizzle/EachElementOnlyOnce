@@ -41,6 +41,7 @@ namespace EachElementOnlyOnceTest
       Assert.AreEqual(1, testList.Start.Value);
       Assert.AreEqual(2, testList.Start.Next.Value);
       Assert.AreEqual(6, testList.End.Value);
+      Assert.IsNull(testList.End.Next);
       Assert.IsFalse(ReferenceEquals(testList.Start, testList.End));
     }
 
